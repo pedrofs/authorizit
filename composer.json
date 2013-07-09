@@ -1,0 +1,20 @@
+{
+    "name": "authorizit/authorizit",
+    "type": "library",
+    "keywords": ["auth", "authorization", "authorize"],
+    "description": "Ease to authorizing you system.",
+    "license": "whataver",
+    "authors": [
+        {
+            "name": "Pedro Fernandes Steimbruch",
+            "email": "pedrofsteimbruch@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-0": { "": "lib/" }
+    },
+    "require": {
+        "php": ">=5.4.0"
+    },
+    "minimum-stability": "stable"
+}
