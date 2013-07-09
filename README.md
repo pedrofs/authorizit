@@ -6,3 +6,5 @@ A simple and usefull example would be a user that can edit(action) a post(resour
 It was hardly inspired on [CanCan](https://github.com/ryanb/cancan/) a RubyOnRails gem.
 
 For now, it has just the basic functionality of authorizing the resources as you can check in the [example](https://github.com/pedrofs/authorizit/blob/master/example/example.php) inside the example dir.
+
+v0.1.0
