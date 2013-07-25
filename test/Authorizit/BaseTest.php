@@ -65,13 +65,13 @@ class BaseTest extends \PHPUnit_Framework_TestCase
     public function testSetSubjectFactory($baseMock)
     {
         $subjectFactoryMock = $this->getMock(
-            'Authorizit\Subject\SubjectInterface'
+            'Authorizit\Subject\SubjectFactoryInterface'
         );
 
         $baseMock->setSubjectFactory($subjectFactoryMock);
 
         $this->assertInstanceOf(
-            'Authorizit\Subject\SubjectInterface',
+            'Authorizit\Subject\SubjectFactoryInterface',
             $baseMock->getSubjectFactory()
         );
     }

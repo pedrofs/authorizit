@@ -3,7 +3,7 @@
 namespace Authorizit;
 
 use Authorizit\Subject\Factory\ObjectSubjectFactory;
-use Authorizit\Subject\SubjectInterface;
+use Authorizit\Subject\SubjectFactoryInterface;
 
 abstract class Base
 {
@@ -54,7 +54,7 @@ abstract class Base
      * @param SubjectInterface $subjectFactory
      * @return $this
      */
-    public function setSubjectFactory(SubjectInterface $subjectFactory)
+    public function setSubjectFactory(SubjectFactoryInterface $subjectFactory)
     {
         $this->subjectFactory = $subjectFactory;
 
