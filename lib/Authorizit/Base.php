@@ -1,7 +1,9 @@
 <?php
+
 namespace Authorizit;
 
 use Authorizit\Subject\Factory\ObjectSubjectFactory;
+use Authorizit\Subject\SubjectInterface;
 
 abstract class Base
 {
@@ -17,6 +19,16 @@ abstract class Base
 
     abstract public function authorizit();
 
+    /**
+     * Just rules getter
+     *
+     * @return array
+     */
+    public function getRules()
+    {
+        return $this->rules;
+    }
+
     public function write($action, $subject, $conditions = array())
     {
         $this->rules[] = new Rule($action, $subject, $conditions);
@@ -26,8 +38,9 @@ abstract class Base
     {
         $subject = $this->subjectFactory->get($subject);
 
-        foreach ($this->rules as $r) {
-            if ($r->match($action, $subject)) {
+        foreach ($this->getRules() as $rule) {
+
+            if ($rule->match($action, $subject)) {
                 return true;
             }
         }
@@ -35,8 +48,26 @@ abstract class Base
         return false;
     }
 
-    public function setSubjectFactory($subjectFactory)
+    /**
+     * Set the subject factory
+     *
+     * @param SubjectInterface $subjectFactory
+     * @return $this
+     */
+    public function setSubjectFactory(SubjectInterface $subjectFactory)
     {
         $this->subjectFactory = $subjectFactory;
+
+        return $this;
+    }
+
+    /**
+     * Get the subject factory
+     *
+     * @return ObjectSubjectFactory
+     */
+    public function getSubjectFactory()
+    {
+        return $this->subjectFactory;
     }
 }
