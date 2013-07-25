@@ -1,4 +1,4 @@
-<?php 
+<?php
 namespace Authorizit;
 
 use Authorizit\Rule;
@@ -11,7 +11,7 @@ class RuleTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->subjectStub = $this->getMock('Authorizit\Subject\SubjectInterface');
- 
+
         $this->subjectStub
              ->expects($this->any())
              ->method('getClass')
@@ -189,7 +189,7 @@ class RuleTest extends \PHPUnit_Framework_TestCase
     public function testMatchRuleWithWrongConditions()
     {
         $subjectStub = $this->getMock('Authorizit\Subject\SubjectInterface');
- 
+
         $subjectStub
              ->expects($this->any())
              ->method('getClass')
