@@ -34,7 +34,7 @@ class ObjectSubject implements SubjectInterface
             $valueFromSubject = $reflectionProperty->getValue($this->subject);
 
             if ($changeModifier) {
-                $reflectionProperty->setAccessible(false);   
+                $reflectionProperty->setAccessible(false);
             }
 
             if ($valueFromSubject != $value) {
