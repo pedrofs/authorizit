@@ -1,5 +1,7 @@
 # Authorizit
 
+[![Build Status](https://travis-ci.org/fsteim/authorizit.png)](https://travis-ci.org/pedrofs/authorizit)
+
 Authorizit is a simple and flexible resource focused authorization library. In other words it is about resources and possible actions to perform over them (based or not in additional conditions).
 A simple and usefull example would be a user that can edit(action) a post(resource) if(condition) it is his post.
 
