@@ -97,7 +97,7 @@ class RuleCollection implements \IteratorAggregate
      */
     public function removeRule(Rule $rule)
     {
-        $key = array_search($rule, $this->rules->getArrayCopy(), true);
+        $key = array_search($rule, $this->rules, true);
 
         if ($key !== false) {
             unset($this->rules[$key]);
