@@ -4,6 +4,7 @@ namespace Authorizit;
 
 use Authorizit\Subject\Factory\ObjectSubjectFactory;
 use Authorizit\Subject\SubjectFactoryInterface;
+use Authorizit\Collection\RuleCollection;
 
 abstract class Base
 {
@@ -14,6 +15,7 @@ abstract class Base
     public function __construct($user)
     {
         $this->user = $user;
+        $this->rules = new RuleCollection();
         $this->subjectFactory = new ObjectSubjectFactory();
     }
 
@@ -31,7 +33,7 @@ abstract class Base
 
     public function write($action, $subject, $conditions = array())
     {
-        $this->rules[] = new Rule($action, $subject, $conditions);
+        $this->rules->add(new Rule($action, $subject, $conditions));
     }
 
     public function check($action, $subject)
@@ -51,7 +53,7 @@ abstract class Base
     /**
      * Set the subject factory
      *
-     * @param SubjectInterface $subjectFactory
+     * @param SubjectFactoryInterface $subjectFactory
      * @return $this
      */
     public function setSubjectFactory(SubjectFactoryInterface $subjectFactory)
