@@ -23,26 +23,6 @@ class RuleTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue(true));
     }
 
-    public function testMatchRuleWithoutConditionsPassingStringToCheck()
-    {
-        $ruleA = new Rule('create', 'Testing');
-        $ruleB = new Rule('read', 'Testing');
-        $ruleC = new Rule('update', 'Testing');
-        $ruleD = new Rule('delete', 'Testing');
-
-        $this->assertTrue($ruleA->match('create', 'Testing'));
-        $this->assertTrue($ruleB->match('read', 'Testing'));
-        $this->assertTrue($ruleC->match('update', 'Testing'));
-        $this->assertTrue($ruleD->match('delete', 'Testing'));
-
-        $rule = new Rule('manage', 'Testing');
-
-        $this->assertTrue($rule->match('create', 'Testing'));
-        $this->assertTrue($rule->match('update', 'Testing'));
-        $this->assertTrue($rule->match('read', 'Testing'));
-        $this->assertTrue($rule->match('delete', 'Testing'));
-    }
-
     public function testMatchRuleWithoutConditionsPassingObjectToCheck()
     {
         $ruleA = new Rule('create', 'SubjectStub');
@@ -61,33 +41,6 @@ class RuleTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($rule->match('update', $this->subjectStub));
         $this->assertTrue($rule->match('read', $this->subjectStub));
         $this->assertTrue($rule->match('delete', $this->subjectStub));
-    }
-
-    public function testMatchRuleWithoutRightPrivilegiesPassingStringToCheck()
-    {
-        $rule = new Rule('read', 'Testing');
-
-        $this->assertFalse($rule->match('create', 'Testing'));
-        $this->assertFalse($rule->match('update', 'Testing'));
-        $this->assertFalse($rule->match('delete', 'Testing'));
-
-        $rule = new Rule('create', 'Testing');
-
-        $this->assertFalse($rule->match('read', 'Testing'));
-        $this->assertFalse($rule->match('update', 'Testing'));
-        $this->assertFalse($rule->match('delete', 'Testing'));
-
-        $rule = new Rule('update', 'Testing');
-
-        $this->assertFalse($rule->match('create', 'Testing'));
-        $this->assertFalse($rule->match('read', 'Testing'));
-        $this->assertFalse($rule->match('delete', 'Testing'));
-
-        $rule = new Rule('delete', 'Testing');
-
-        $this->assertFalse($rule->match('create', 'Testing'));
-        $this->assertFalse($rule->match('update', 'Testing'));
-        $this->assertFalse($rule->match('read', 'Testing'));
     }
 
     public function testMatchRuleWithoutRightPrivilegiesPassingObjectToCheck()
@@ -117,19 +70,6 @@ class RuleTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($rule->match('read', $this->subjectStub));
     }
 
-    public function testMatchRuleWithoutConditionsAllSubjectsPrivilegiesUsingStringToCheck()
-    {
-        $ruleA = new Rule('create', 'all');
-        $ruleB = new Rule('read', 'all');
-        $ruleC = new Rule('update', 'all');
-        $ruleD = new Rule('delete', 'all');
-
-        $this->assertTrue($ruleA->match('create', 'Testing'));
-        $this->assertTrue($ruleB->match('read', 'Foo'));
-        $this->assertTrue($ruleC->match('update', 'Bar'));
-        $this->assertTrue($ruleD->match('delete', 'Bar'));
-    }
-
     public function testMatchRuleWithoutConditionsAllSubjectsPrivilegiesUsingObjectToCheck()
     {
         $ruleA = new Rule('create', 'all');
@@ -143,29 +83,9 @@ class RuleTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($ruleD->match('delete', $this->subjectStub));
     }
 
-    public function testMatchWithAllSubjectsAndManagePrivilegiesUsingStringToCheck()
-    {
-        $rule = new Rule('manage', 'all');
-
-        $this->assertTrue($rule->match('create', 'Testing'));
-        $this->assertTrue($rule->match('read', 'Testing'));
-        $this->assertTrue($rule->match('update', 'Testing'));
-        $this->assertTrue($rule->match('delete', 'Testing'));
-
-        $this->assertTrue($rule->match('create', 'TestingA'));
-        $this->assertTrue($rule->match('read', 'TestingA'));
-        $this->assertTrue($rule->match('update', 'TestingA'));
-        $this->assertTrue($rule->match('delete', 'TestingA'));
-    }
-
     public function testMatchWithAllSubjectsAndManagePrivilegiesUsingObjectToCheck()
     {
         $rule = new Rule('manage', 'all');
-
-        $this->assertTrue($rule->match('create', 'SubjectStub'));
-        $this->assertTrue($rule->match('read', 'SubjectStub'));
-        $this->assertTrue($rule->match('update', 'SubjectStub'));
-        $this->assertTrue($rule->match('delete', 'SubjectStub'));
 
         $this->assertTrue($rule->match('create', $this->subjectStub));
         $this->assertTrue($rule->match('read', $this->subjectStub));

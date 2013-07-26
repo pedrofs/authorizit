@@ -5,22 +5,26 @@ use Authorizit\Base;
 
 class Authorizit extends Base
 {
-    public function __construct($user)
+    public function init()
     {
-        parent::__construct($user);
-    }
-
-    public function authorizit()
-    {
-        $this->write('read', 'Testing');
+        $this->write('read', 'Testing', array('userId' => $this->user['id']));
     }
 }
 
-class Testing {}
+class Testing
+{
+	protected $userId;
+
+	public function __construct($userId)
+	{
+		$this->userId = $userId;
+	}
+}
 
 $auth = new Authorizit(array('id' => 1));
 
-$auth->authorizit();
+$auth->init();
 
 var_dump($auth->check('read', 'Testing'));
-var_dump($auth->check('read', new Testing));
+var_dump($auth->check('read', new Testing(2)));
+var_dump($auth->check('read', new Testing(1)));

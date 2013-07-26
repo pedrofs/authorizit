@@ -21,6 +21,10 @@ class ObjectSubject implements SubjectInterface
 
     public function checkProperties($conditions)
     {
+        if (is_string($this->subject)) {
+            return true;
+        }
+
         foreach ($conditions as $attr => $value) {
             $reflectionSubject = new \ReflectionClass($this->subject);
 

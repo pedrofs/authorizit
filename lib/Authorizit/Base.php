@@ -19,7 +19,7 @@ abstract class Base
         $this->subjectFactory = new ObjectSubjectFactory();
     }
 
-    abstract public function authorizit();
+    abstract public function init();
 
     /**
      * Just rules getter

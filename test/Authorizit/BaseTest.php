@@ -94,7 +94,7 @@ class BaseTest extends \PHPUnit_Framework_TestCase
 
         $baseMock = $this->getMock(
             'Authorizit\Base',
-            array('getRules', 'authorizit'),
+            array('getRules', 'init'),
             array('AuthorizitUser')
         );
 

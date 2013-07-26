@@ -59,19 +59,11 @@ class Rule
 
     private function matchSubjectConditions($subject)
     {
-        if (is_string($subject)) {
-            return true;
-        }
-
         return $subject->checkProperties($this->conditions);
     }
 
     private function getSubjectClass($subject)
     {
-        if (is_string($subject)) {
-            return $subject;
-        }
-
         return $subject->getClass();
     }
 }
