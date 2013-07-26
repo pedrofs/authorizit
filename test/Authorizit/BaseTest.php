@@ -27,14 +27,14 @@ class BaseTest extends \PHPUnit_Framework_TestCase
      */
     public function testWrite($baseMock)
     {
-        $this->assertNull($baseMock->getRules());
+        $this->assertCount(0, $baseMock->getRules());
 
         $baseMock->write('create', 'target', array('AuthorizitCondition'));
 
         $rules = $baseMock->getRules();
 
-        $this->assertEquals(1, count($rules));
-        $this->assertInstanceOf('Authorizit\Rule', reset($rules));
+        $this->assertCount(1, $rules);
+        $this->assertInstanceOf('Authorizit\Rule', $rules->first());
     }
 
     /**

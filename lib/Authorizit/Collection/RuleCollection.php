@@ -9,7 +9,7 @@ use Authorizit\Rule;
  *
  * @author  Ricardo Heck <ricardoh3ck@gmail.com>
  */
-class RuleCollection implements \IteratorAggregate
+class RuleCollection implements \IteratorAggregate, \Countable
 {
     /**
      * An ArrayIterator containing the entries of this collection.
@@ -69,6 +69,17 @@ class RuleCollection implements \IteratorAggregate
     public function get($key)
     {
         return isset($this->rules[$key]) ? $this->rules[$key] : false;
+    }
+
+    /**
+     * Sets the internal iterator to the first rule in the collection and
+     * returns it.
+     *
+     * @return Rule
+     */
+    public function first()
+    {
+        return reset($this->rules);
     }
 
     /**
