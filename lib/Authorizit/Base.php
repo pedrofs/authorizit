@@ -11,12 +11,14 @@ abstract class Base
     protected $user;
     protected $rules;
     protected $subjectFactory;
+    protected $modelAdapter;
 
-    public function __construct($user)
+    public function __construct($user, $modelAdapter = null)
     {
         $this->user = $user;
         $this->rules = new RuleCollection();
         $this->subjectFactory = new ObjectSubjectFactory();
+        $this->modelAdapter  = $modelAdapter;
     }
 
     abstract public function init();
