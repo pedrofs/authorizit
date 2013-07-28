@@ -2,23 +2,21 @@
 
 namespace Authorizit;
 
-use Authorizit\Subject\Factory\ObjectSubjectFactory;
-use Authorizit\Subject\SubjectFactoryInterface;
+use Authorizit\Resource\ResourceFactoryInterface;
 use Authorizit\Collection\RuleCollection;
 
 abstract class Base
 {
     protected $user;
     protected $rules;
-    protected $subjectFactory;
+    protected $resourceFactory;
     protected $modelAdapter;
 
-    public function __construct($user, $modelAdapter = null)
+    public function __construct($user, $resourceFactory)
     {
         $this->user = $user;
         $this->rules = new RuleCollection();
-        $this->subjectFactory = new ObjectSubjectFactory();
-        $this->modelAdapter  = $modelAdapter;
+        $this->resourceFactory = $resourceFactory;
     }
 
     abstract public function init();
@@ -33,18 +31,17 @@ abstract class Base
         return $this->rules;
     }
 
-    public function write($action, $subject, $conditions = array())
+    public function write($action, $resource, $conditions = array())
     {
-        $this->rules->add(new Rule($action, $subject, $conditions));
+        $this->rules->add(new Rule($action, $resource, $conditions));
     }
 
-    public function check($action, $subject)
+    public function check($action, $resource)
     {
-        $subject = $this->subjectFactory->get($subject);
+        $resource = $this->resourceFactory->get($resource);
 
         foreach ($this->getRules() as $rule) {
-
-            if ($rule->match($action, $subject)) {
+            if ($rule->match($action, $resource)) {
                 return true;
             }
         }
@@ -53,25 +50,25 @@ abstract class Base
     }
 
     /**
-     * Set the subject factory
+     * Set the resource factory
      *
-     * @param SubjectFactoryInterface $subjectFactory
+     * @param ResourceFactoryInterface $resourceFactory
      * @return $this
      */
-    public function setSubjectFactory(SubjectFactoryInterface $subjectFactory)
+    public function setResourceFactory(ResourceFactoryInterface $resourceFactory)
     {
-        $this->subjectFactory = $subjectFactory;
+        $this->resourceFactory = $resourceFactory;
 
         return $this;
     }
 
     /**
-     * Get the subject factory
+     * Get the resource factory
      *
-     * @return ObjectSubjectFactory
+     * @return ObjectResourceFactory
      */
-    public function getSubjectFactory()
+    public function getResourceFactory()
     {
-        return $this->subjectFactory;
+        return $this->resourceFactory;
     }
 }
