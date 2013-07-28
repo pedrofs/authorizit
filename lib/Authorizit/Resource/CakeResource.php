@@ -1,22 +1,22 @@
 <?php
-namespace Authorizit\Subject;
+namespace Authorizit\Resource;
 
-class CakeSubject implements SubjectInterface
+class CakeResource implements ResourceInterface
 {
-    private $subject;
+    private $resource;
 
-    public function __construct($subject)
+    public function __construct($resource)
     {
-        $this->subject = $subject;
+        $this->resource = $resource;
     }
 
     public function getClass()
     {
-        if (is_string($this->subject)) {
-            return $this->subject;
+        if (is_string($this->resource)) {
+            return $this->resource;
         }
 
-        return $this->subject->alias;
+        return $this->resource->alias;
     }
 
     public function checkProperties($conditions)

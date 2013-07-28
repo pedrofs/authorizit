@@ -1,36 +1,29 @@
 <?php
-namespace Authorizit\Subject;
+namespace Authorizit\Resource;
 
-class ObjectSubject implements SubjectInterface
+class ObjectResource implements ResourceInterface
 {
     const PUBLIC_MODIFIER     = 'public';
     const PROTECTED_MODIFIER  = 'protected';
     const PRIVATE_MODIFIER    = 'private';
 
-    private $subject;
+    private $resource;
 
-    public function __construct($subject)
+    public function __construct($resource)
     {
-        $this->subject = $subject;
+        $this->resource = $resource;
     }
 
     public function getClass()
     {
-        if (is_string($this->subject)) {
-            return $this->subject;
-        }
-
-        return get_class($this->subject);
+        return is_string($this->resource) ? $this->resource :
+            get_class($this->resource);
     }
 
     public function checkProperties($conditions)
     {
-        if (is_string($this->subject)) {
-            return true;
-        }
-
         foreach ($conditions as $attr => $value) {
-            if ($this->getValueFromSubject() != $value) {
+            if($this->getValueFromResource($attr) != $value) {
                 return false;
             }
         }
@@ -38,19 +31,19 @@ class ObjectSubject implements SubjectInterface
         return true;
     }
 
-    private function getValueFromSubject()
+    private function getValueFromResource($attr)
     {
-        $reflectionSubject = new \ReflectionClass($this->subject);
-
-        $reflectionProperty = $reflectionSubject->getProperty($attr);
-
-        $modifier = $this->getPropertyModifier($reflectionProperty);
+        $reflectionResource = new \ReflectionClass($this->resource);
+        $reflectionProperty = $reflectionResource->getProperty($attr);
+        $modifier           = $this->getPropertyModifier($reflectionProperty);
 
         $reflectionProperty->setAccessible(true);
 
+        $value = $reflectionProperty->getValue($this->resource);
+
         $this->setPropertyModifier($reflectionProperty, $modifier);
 
-        return $reflectionProperty->getValue($this->subject);
+        return $value;
     }
 
     private function getPropertyModifier($reflectionProperty)
