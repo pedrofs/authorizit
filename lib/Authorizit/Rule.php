@@ -4,9 +4,9 @@ namespace Authorizit;
 class Rule
 {
     const MANAGE_ACTION = 'manage';
-    const ALL_SUBJECTS  = 'all';
+    const ALL_RESOURCES  = 'all';
 
-    private $subject;
+    private $resource;
     private $action;
     private $conditions;
     private $availableActions = array(
@@ -17,7 +17,7 @@ class Rule
         'manage',
     );
 
-    public function __construct($action, $subject, $conditions = array())
+    public function __construct($action, $resource, $conditions = array())
     {
         if (!in_array($action, $this->availableActions)) {
             throw new \InvalidArgumentException(
@@ -26,15 +26,16 @@ class Rule
             );
         }
 
-        $this->subject    = $subject;
+        $this->resource    = $resource;
         $this->action     = $action;
         $this->conditions = $conditions;
     }
 
-    public function match($action, $subject)
+    public function match($action, $resource)
     {
         return $this->matchAction($action) &&
-            $this->matchSubject($subject);
+                $this->matchResourceClass($resource) &&
+                $this->matchResourceConditions($resource);
     }
 
     public function matchAction($action)
@@ -43,27 +44,21 @@ class Rule
             $this->action == $action;
     }
 
-    public function matchSubject($subject)
+    private function matchResourceClass($resource)
     {
-        return $this->matchSubjectClass($subject) &&
-            $this->matchSubjectConditions($subject);
+        $resourceClass = $this->getResourceClass($resource);
+
+        return $this->resource == self::ALL_RESOURCES ||
+            $this->resource == $resourceClass;
     }
 
-    private function matchSubjectClass($subject)
+    private function matchResourceConditions($resource)
     {
-        $subjectClass = $this->getSubjectClass($subject);
-
-        return $this->subject == self::ALL_SUBJECTS ||
-            $this->subject == $subjectClass;
+        return $resource->checkProperties($this->conditions);
     }
 
-    private function matchSubjectConditions($subject)
+    private function getResourceClass($resource)
     {
-        return $subject->checkProperties($this->conditions);
-    }
-
-    private function getSubjectClass($subject)
-    {
-        return $subject->getClass();
+        return $resource->getClass();
     }
 }
