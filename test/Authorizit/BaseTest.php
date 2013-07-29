@@ -6,6 +6,24 @@ use Authorizit\Base;
 
 class BaseTest extends \PHPUnit_Framework_TestCase
 {
+    public function testConstructor()
+    {
+        $resourceFactoryMock = $this->getMock(
+            'Authorizit\Resource\ResourceFactoryInterface'
+        );
+
+        $baseMock = $this->getMockForAbstractClass(
+            'Authorizit\Base',
+            array(
+                array('id' => 1),
+                $resourceFactoryMock
+            ),
+            'ConcreteBaseMock'
+        );
+
+        $this->assertInstanceOf('Authorizit\Base', $baseMock);
+    }
+
     /**
      * @dataProvider getConcreteBaseMock
      */
