@@ -8,102 +8,171 @@ class BaseTest extends \PHPUnit_Framework_TestCase
 {
     public function testConstructor()
     {
+        $resourceFactoryMock = $this->getMock(
+            'Authorizit\Resource\ResourceFactoryInterface'
+        );
+
         $baseMock = $this->getMockForAbstractClass(
             'Authorizit\Base',
-            array('AuthorizitUser'),
+            array(
+                array('id' => 1),
+                $resourceFactoryMock
+            ),
             'ConcreteBaseMock'
         );
 
         $this->assertInstanceOf('Authorizit\Base', $baseMock);
-
-        return array(
-            array($baseMock)
-        );
     }
 
     /**
-     * @dataProvider testConstructor
-     * @param Base $baseMock
+     * @dataProvider getConcreteBaseMock
      */
     public function testWrite($baseMock)
     {
-        $this->assertNull($baseMock->getRules());
+        $this->assertCount(0, $baseMock->getRules());
 
-        $baseMock->write('create', 'target', array('AuthorizitCondition'));
+        $baseMock->write('create', 'Resource', array('attr' => 1));
 
         $rules = $baseMock->getRules();
 
-        $this->assertEquals(1, count($rules));
-        $this->assertInstanceOf('Authorizit\Rule', reset($rules));
+        $this->assertCount(1, $rules);
+        $this->assertInstanceOf('Authorizit\Rule', $rules->first());
     }
 
     /**
-     * @dataProvider providerForTestCheck
-     * @param \Authorizit\Base $baseMock
+     * @dataProvider getConcreteBaseMock
      */
     public function testCheck($baseMock)
     {
         $baseMock->write(
             'create',
-            'Authorizit\Subject\ObjectSubject',
-            array('subject' => 'AuthorizitCondition')
+            'Authorizit\Resource\ResourceInterface',
+            array('userId' => 1)
         );
 
         $this->assertTrue(
-            $baseMock->check('create', 'Authorizit\Subject\ObjectSubject')
+            $baseMock->check('create', 'Authorizit\Resource\ResourceInterface')
         );
 
         $this->assertFalse(
-            $baseMock->check('create', 'Authorizit\Subject\ObjectSubject')
+            $baseMock->check('update', 'Authorizit\Resource\ResourceInterface')
         );
     }
 
     /**
-     * @dataProvider testConstructor
-     * @param Base $baseMock
+     * @dataProvider getConcreteBaseMock
      */
-    public function testSetSubjectFactory($baseMock)
+    public function testSetResourceFactory($baseMock)
     {
-        $subjectFactoryMock = $this->getMock(
-            'Authorizit\Subject\SubjectFactoryInterface'
+        $resourceFactoryMock = $this->getMock(
+            'Authorizit\Resource\ResourceFactoryInterface'
         );
 
-        $baseMock->setSubjectFactory($subjectFactoryMock);
+        $baseMock->setResourceFactory($resourceFactoryMock);
 
         $this->assertInstanceOf(
-            'Authorizit\Subject\SubjectFactoryInterface',
-            $baseMock->getSubjectFactory()
+            'Authorizit\Resource\ResourceFactoryInterface',
+            $baseMock->getResourceFactory()
         );
     }
 
-    public function providerForTestCheck()
+    /**
+     * @dataProvider getConcreteBaseMock
+     */
+    public function testLoadResources($baseMock)
     {
-        $rulesMock = $this->getMock(
-            'Authorizit\Rule',
-            array('match'),
-            array('create', 'Authorizit\Subject\ObjectSubject')
+        $adapterModelMock = $this->getMock(
+            'Authorizit\ModelAdapter\ModelAdapterInterface'
         );
 
-        $rulesMock->expects($this->at(0))
-            ->method('match')
-            ->will($this->returnValue(true));
+        $adapterModelMock->expects($this->any())
+            ->method('loadResources')
+            ->will($this->returnValue(array('id' => 1)));
 
-        $rulesMock->expects($this->at(1))
-            ->method('match')
-            ->will($this->returnValue(false));
+        $baseMock->setModelAdapter($adapterModelMock);
+
+        $this->assertCount(1, $baseMock->loadResources('action', 'TestResource'));
+    }
+
+    /**
+     * @dataProvider getConcreteBaseMock
+     */
+    public function testGetRelevantRules($baseMock)
+    {
+        $baseMock->write('create', 'Authorizit\Resource\ResourceInterface');
+        $baseMock->write('update', 'Authorizit\Resource\ResourceInterface');
+
+        $this->assertCount(1, $baseMock->getRelevantRules('create', 'Authorizit\Resource\ResourceInterface'));
+    }
+
+    /**
+     * @dataProvider getConcreteBaseMock
+     * @expectedException BadMethodCallException
+     */
+    public function testExceptionLoadResources($baseMock)
+    {
+        $this->assertCount(1, $baseMock->loadResources('action', 'TestResource'));
+    }
+
+    /**
+     * @dataProvider getConcreteBaseMock
+     */
+    public function testSetModelAdapter($baseMock)
+    {
+        $modelAdapterMock = $this->getMock(
+            'Authorizit\ModelAdapter\ModelAdapterInterface'
+        );
+
+        $baseMock->setModelAdapter($modelAdapterMock);
+
+        $this->assertInstanceOf(
+            'Authorizit\ModelAdapter\ModelAdapterInterface',
+            $baseMock->getModelAdapter()
+        );
+    }
+
+    public function getConcreteBaseMock()
+    {
+        $resourceMock = $this->getResourceMock();
+
+        $resourceFactoryMock = $this->getMock(
+            'Authorizit\Resource\Factory\ResourceFactoryInterface'
+        );
+
+        $resourceFactoryMock->expects($this->any())
+            ->method('get')
+            ->will($this->returnValue($resourceMock));
 
         $baseMock = $this->getMock(
             'Authorizit\Base',
-            array('getRules', 'authorizit'),
-            array('AuthorizitUser')
+            array('init'),
+            array(array('id' => 1), $resourceFactoryMock)
         );
-
-        $baseMock->expects($this->any())
-            ->method('getRules')
-            ->will($this->returnValue(array($rulesMock)));
 
         return array(
             array($baseMock)
         );
+    }
+
+    private function getResourceMock()
+    {
+        $resourceMock = $this->getMock('Authorizit\Resource\ResourceInterface');
+        $resourceMock->expects($this->any())
+            ->method('getClass')
+            ->will($this->returnValue('Authorizit\Resource\ResourceInterface'));
+
+        $resourceMock->expects($this->at(0))
+            ->method('checkProperties')
+            ->will($this->returnValue(true));
+
+        $resourceMock->expects($this->at(1))
+            ->method('checkProperties')
+            ->will($this->returnValue(true));
+
+        $resourceMock->expects($this->at(2))
+            ->method('checkProperties')
+            ->will($this->returnValue(false));
+
+        return $resourceMock;
     }
 }

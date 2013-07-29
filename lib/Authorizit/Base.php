@@ -2,22 +2,29 @@
 
 namespace Authorizit;
 
-use Authorizit\Subject\Factory\ObjectSubjectFactory;
-use Authorizit\Subject\SubjectFactoryInterface;
+use Authorizit\Resource\ResourceFactoryInterface;
+use Authorizit\Collection\RuleCollection;
 
 abstract class Base
 {
     protected $user;
     protected $rules;
-    protected $subjectFactory;
+    protected $resourceFactory;
+    protected $modelAdapter;
 
-    public function __construct($user)
+    public function __construct($user, $resourceFactory, $modelAdapter = null)
     {
-        $this->user = $user;
-        $this->subjectFactory = new ObjectSubjectFactory();
+        $this->user            = $user;
+        $this->rules           = new RuleCollection();
+        $this->resourceFactory = $resourceFactory;
+        $this->modelAdapter    = $modelAdapter;
     }
 
-    abstract public function authorizit();
+    /**
+     * Abstract function that should be implemented in order to add
+     * rules for this authorizit instance.
+     */
+    abstract public function init();
 
     /**
      * Just rules getter
@@ -29,18 +36,78 @@ abstract class Base
         return $this->rules;
     }
 
-    public function write($action, $subject, $conditions = array())
+    /**
+     * Get the resource factory.
+     *
+     * @return ObjectResourceFactory
+     */
+    public function getResourceFactory()
     {
-        $this->rules[] = new Rule($action, $subject, $conditions);
+        return $this->resourceFactory;
     }
 
-    public function check($action, $subject)
+    /**
+     * Set the resource factory.
+     *
+     * @param ResourceFactoryInterface $resourceFactory
+     * @return $this
+     */
+    public function setResourceFactory(ResourceFactoryInterface $resourceFactory)
     {
-        $subject = $this->subjectFactory->get($subject);
+        $this->resourceFactory = $resourceFactory;
+
+        return $this;
+    }
+
+    /**
+     * Get the modelAdapter class.
+     *
+     * @return ModelAdapterInterface
+     */
+    public function getModelAdapter()
+    {
+        return $this->modelAdapter;
+    }
+
+    /**
+     * Set the modelAdapter class.
+     *
+     * @param ModelAdapterInterface $modelAdapter
+     * @return $this
+     */
+    public function setModelAdapter($modelAdapter)
+    {
+        $this->modelAdapter = $modelAdapter;
+
+        return $this;
+    }
+
+    /**
+     * Add a rule to this authorizit instance.
+     *
+     * @param string $action
+     * @param string $resource
+     * @param array  $conditions
+     * @return null
+     */
+    public function write($action, $resourceClass, $conditions = array())
+    {
+        $this->rules->add(new Rule($action, $resourceClass, $conditions));
+    }
+
+    /**
+     * Check the permission for given action and resource
+     *
+     * @param string $action
+     * @param mixed $resource
+     * @return bool
+     */
+    public function check($action, $resource)
+    {
+        $resource = $this->resourceFactory->get($resource);
 
         foreach ($this->getRules() as $rule) {
-
-            if ($rule->match($action, $subject)) {
+            if ($rule->match($action, $resource)) {
                 return true;
             }
         }
@@ -49,25 +116,46 @@ abstract class Base
     }
 
     /**
-     * Set the subject factory
+     * Load resources based on authorizit rules.
      *
-     * @param SubjectInterface $subjectFactory
-     * @return $this
+     * @param string $action
+     * @param string $resourceClass
+     * @return array
      */
-    public function setSubjectFactory(SubjectFactoryInterface $subjectFactory)
+    public function loadResources($action, $resourceClass)
     {
-        $this->subjectFactory = $subjectFactory;
+        if (!$this->modelAdapter) {
+            throw new \BadMethodCallException(
+                "\$modelAdapter not set. " .
+                "You should set one in order to retrieve authorized resources. " .
+                "See ModelAdapterInterface."
+            );
+        }
 
-        return $this;
+        $rules = $this->getRelevantRules($action, $resourceClass);
+
+        return $this->modelAdapter->loadResources($rules);
     }
 
     /**
-     * Get the subject factory
+     * Get rules that fit the $action and $resourceClass (do not check anything about conditions).
      *
-     * @return ObjectSubjectFactory
+     * @param string $action
+     * @param string $resourceClass
+     * @return array
      */
-    public function getSubjectFactory()
+    public function getRelevantRules($action, $resourceClass)
     {
-        return $this->subjectFactory;
+        $rules = [];
+
+        foreach ($this->getRules() as $rule) {
+            $resource = $this->resourceFactory->get($resourceClass);
+
+            if ($rule->softMatch($action, $resource)) {
+                $rules[] = $rule;
+            }
+        }
+
+        return $rules;
     }
 }

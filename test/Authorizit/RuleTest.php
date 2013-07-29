@@ -2,7 +2,7 @@
 namespace Authorizit;
 
 use Authorizit\Rule;
-use Authorizit\Subject\SubjectInterface;
+use Authorizit\Resource\ResourceInterface;
 
 class SomeClass { public function doSomething() {}}
 
@@ -10,200 +10,120 @@ class RuleTest extends \PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->subjectStub = $this->getMock('Authorizit\Subject\SubjectInterface');
+        $this->resourceStub = $this->getMock('Authorizit\Resource\ResourceInterface');
 
-        $this->subjectStub
+        $this->resourceStub
              ->expects($this->any())
              ->method('getClass')
-             ->will($this->returnValue('SubjectStub'));
+             ->will($this->returnValue('ResourceStub'));
 
-        $this->subjectStub
+        $this->resourceStub
             ->expects($this->any())
             ->method('checkProperties')
             ->will($this->returnValue(true));
     }
 
-    public function testMatchRuleWithoutConditionsPassingStringToCheck()
-    {
-        $ruleA = new Rule('create', 'Testing');
-        $ruleB = new Rule('read', 'Testing');
-        $ruleC = new Rule('update', 'Testing');
-        $ruleD = new Rule('delete', 'Testing');
-
-        $this->assertTrue($ruleA->match('create', 'Testing'));
-        $this->assertTrue($ruleB->match('read', 'Testing'));
-        $this->assertTrue($ruleC->match('update', 'Testing'));
-        $this->assertTrue($ruleD->match('delete', 'Testing'));
-
-        $rule = new Rule('manage', 'Testing');
-
-        $this->assertTrue($rule->match('create', 'Testing'));
-        $this->assertTrue($rule->match('update', 'Testing'));
-        $this->assertTrue($rule->match('read', 'Testing'));
-        $this->assertTrue($rule->match('delete', 'Testing'));
-    }
-
     public function testMatchRuleWithoutConditionsPassingObjectToCheck()
     {
-        $ruleA = new Rule('create', 'SubjectStub');
-        $ruleB = new Rule('read', 'SubjectStub');
-        $ruleC = new Rule('update', 'SubjectStub');
-        $ruleD = new Rule('delete', 'SubjectStub');
+        $ruleA = new Rule('create', 'ResourceStub');
+        $ruleB = new Rule('read', 'ResourceStub');
+        $ruleC = new Rule('update', 'ResourceStub');
+        $ruleD = new Rule('delete', 'ResourceStub');
 
-        $this->assertTrue($ruleA->match('create', $this->subjectStub));
-        $this->assertTrue($ruleB->match('read', $this->subjectStub));
-        $this->assertTrue($ruleC->match('update', $this->subjectStub));
-        $this->assertTrue($ruleD->match('delete', $this->subjectStub));
+        $this->assertTrue($ruleA->match('create', $this->resourceStub));
+        $this->assertTrue($ruleB->match('read', $this->resourceStub));
+        $this->assertTrue($ruleC->match('update', $this->resourceStub));
+        $this->assertTrue($ruleD->match('delete', $this->resourceStub));
 
-        $rule = new Rule('manage', 'SubjectStub');
+        $rule = new Rule('manage', 'ResourceStub');
 
-        $this->assertTrue($rule->match('create', $this->subjectStub));
-        $this->assertTrue($rule->match('update', $this->subjectStub));
-        $this->assertTrue($rule->match('read', $this->subjectStub));
-        $this->assertTrue($rule->match('delete', $this->subjectStub));
-    }
-
-    public function testMatchRuleWithoutRightPrivilegiesPassingStringToCheck()
-    {
-        $rule = new Rule('read', 'Testing');
-
-        $this->assertFalse($rule->match('create', 'Testing'));
-        $this->assertFalse($rule->match('update', 'Testing'));
-        $this->assertFalse($rule->match('delete', 'Testing'));
-
-        $rule = new Rule('create', 'Testing');
-
-        $this->assertFalse($rule->match('read', 'Testing'));
-        $this->assertFalse($rule->match('update', 'Testing'));
-        $this->assertFalse($rule->match('delete', 'Testing'));
-
-        $rule = new Rule('update', 'Testing');
-
-        $this->assertFalse($rule->match('create', 'Testing'));
-        $this->assertFalse($rule->match('read', 'Testing'));
-        $this->assertFalse($rule->match('delete', 'Testing'));
-
-        $rule = new Rule('delete', 'Testing');
-
-        $this->assertFalse($rule->match('create', 'Testing'));
-        $this->assertFalse($rule->match('update', 'Testing'));
-        $this->assertFalse($rule->match('read', 'Testing'));
+        $this->assertTrue($rule->match('create', $this->resourceStub));
+        $this->assertTrue($rule->match('update', $this->resourceStub));
+        $this->assertTrue($rule->match('read', $this->resourceStub));
+        $this->assertTrue($rule->match('delete', $this->resourceStub));
     }
 
     public function testMatchRuleWithoutRightPrivilegiesPassingObjectToCheck()
     {
         $rule = new Rule('read', 'Testing');
 
-        $this->assertFalse($rule->match('create', $this->subjectStub));
-        $this->assertFalse($rule->match('update', $this->subjectStub));
-        $this->assertFalse($rule->match('delete', $this->subjectStub));
+        $this->assertFalse($rule->match('create', $this->resourceStub));
+        $this->assertFalse($rule->match('update', $this->resourceStub));
+        $this->assertFalse($rule->match('delete', $this->resourceStub));
 
         $rule = new Rule('create', 'Testing');
 
-        $this->assertFalse($rule->match('read', $this->subjectStub));
-        $this->assertFalse($rule->match('update', $this->subjectStub));
-        $this->assertFalse($rule->match('delete', $this->subjectStub));
+        $this->assertFalse($rule->match('read', $this->resourceStub));
+        $this->assertFalse($rule->match('update', $this->resourceStub));
+        $this->assertFalse($rule->match('delete', $this->resourceStub));
 
         $rule = new Rule('update', 'Testing');
 
-        $this->assertFalse($rule->match('create', $this->subjectStub));
-        $this->assertFalse($rule->match('update', $this->subjectStub));
-        $this->assertFalse($rule->match('delete', $this->subjectStub));
+        $this->assertFalse($rule->match('create', $this->resourceStub));
+        $this->assertFalse($rule->match('update', $this->resourceStub));
+        $this->assertFalse($rule->match('delete', $this->resourceStub));
 
         $rule = new Rule('delete', 'Testing');
 
-        $this->assertFalse($rule->match('create', $this->subjectStub));
-        $this->assertFalse($rule->match('update', $this->subjectStub));
-        $this->assertFalse($rule->match('read', $this->subjectStub));
+        $this->assertFalse($rule->match('create', $this->resourceStub));
+        $this->assertFalse($rule->match('update', $this->resourceStub));
+        $this->assertFalse($rule->match('read', $this->resourceStub));
     }
 
-    public function testMatchRuleWithoutConditionsAllSubjectsPrivilegiesUsingStringToCheck()
+    public function testMatchRuleWithoutConditionsAllResourcesPrivilegiesUsingObjectToCheck()
     {
         $ruleA = new Rule('create', 'all');
         $ruleB = new Rule('read', 'all');
         $ruleC = new Rule('update', 'all');
         $ruleD = new Rule('delete', 'all');
 
-        $this->assertTrue($ruleA->match('create', 'Testing'));
-        $this->assertTrue($ruleB->match('read', 'Foo'));
-        $this->assertTrue($ruleC->match('update', 'Bar'));
-        $this->assertTrue($ruleD->match('delete', 'Bar'));
+        $this->assertTrue($ruleA->match('create', $this->resourceStub));
+        $this->assertTrue($ruleB->match('read', $this->resourceStub));
+        $this->assertTrue($ruleC->match('update', $this->resourceStub));
+        $this->assertTrue($ruleD->match('delete', $this->resourceStub));
     }
 
-    public function testMatchRuleWithoutConditionsAllSubjectsPrivilegiesUsingObjectToCheck()
-    {
-        $ruleA = new Rule('create', 'all');
-        $ruleB = new Rule('read', 'all');
-        $ruleC = new Rule('update', 'all');
-        $ruleD = new Rule('delete', 'all');
-
-        $this->assertTrue($ruleA->match('create', $this->subjectStub));
-        $this->assertTrue($ruleB->match('read', $this->subjectStub));
-        $this->assertTrue($ruleC->match('update', $this->subjectStub));
-        $this->assertTrue($ruleD->match('delete', $this->subjectStub));
-    }
-
-    public function testMatchWithAllSubjectsAndManagePrivilegiesUsingStringToCheck()
+    public function testMatchWithAllResourcesAndManagePrivilegiesUsingObjectToCheck()
     {
         $rule = new Rule('manage', 'all');
 
-        $this->assertTrue($rule->match('create', 'Testing'));
-        $this->assertTrue($rule->match('read', 'Testing'));
-        $this->assertTrue($rule->match('update', 'Testing'));
-        $this->assertTrue($rule->match('delete', 'Testing'));
-
-        $this->assertTrue($rule->match('create', 'TestingA'));
-        $this->assertTrue($rule->match('read', 'TestingA'));
-        $this->assertTrue($rule->match('update', 'TestingA'));
-        $this->assertTrue($rule->match('delete', 'TestingA'));
-    }
-
-    public function testMatchWithAllSubjectsAndManagePrivilegiesUsingObjectToCheck()
-    {
-        $rule = new Rule('manage', 'all');
-
-        $this->assertTrue($rule->match('create', 'SubjectStub'));
-        $this->assertTrue($rule->match('read', 'SubjectStub'));
-        $this->assertTrue($rule->match('update', 'SubjectStub'));
-        $this->assertTrue($rule->match('delete', 'SubjectStub'));
-
-        $this->assertTrue($rule->match('create', $this->subjectStub));
-        $this->assertTrue($rule->match('read', $this->subjectStub));
-        $this->assertTrue($rule->match('update', $this->subjectStub));
-        $this->assertTrue($rule->match('delete', $this->subjectStub));
+        $this->assertTrue($rule->match('create', $this->resourceStub));
+        $this->assertTrue($rule->match('read', $this->resourceStub));
+        $this->assertTrue($rule->match('update', $this->resourceStub));
+        $this->assertTrue($rule->match('delete', $this->resourceStub));
     }
 
     public function testMatchRuleWithRightConditions()
     {
-        $ruleA = new Rule('create', 'SubjectStub', array('userId' => 1, 'foo' => 1));
-        $ruleB = new Rule('read', 'SubjectStub', array('userId' => 1, 'foo' => 1));
-        $ruleC = new Rule('update', 'SubjectStub', array('userId' => 1, 'foo' => 1));
-        $ruleD = new Rule('delete', 'SubjectStub', array('userId' => 1, 'foo' => 1));
+        $ruleA = new Rule('create', 'ResourceStub', array('userId' => 1, 'foo' => 1));
+        $ruleB = new Rule('read', 'ResourceStub', array('userId' => 1, 'foo' => 1));
+        $ruleC = new Rule('update', 'ResourceStub', array('userId' => 1, 'foo' => 1));
+        $ruleD = new Rule('delete', 'ResourceStub', array('userId' => 1, 'foo' => 1));
 
-        $this->assertTrue($ruleA->match('create', $this->subjectStub));
-        $this->assertTrue($ruleB->match('read', $this->subjectStub));
-        $this->assertTrue($ruleC->match('update', $this->subjectStub));
-        $this->assertTrue($ruleD->match('delete', $this->subjectStub));
+        $this->assertTrue($ruleA->match('create', $this->resourceStub));
+        $this->assertTrue($ruleB->match('read', $this->resourceStub));
+        $this->assertTrue($ruleC->match('update', $this->resourceStub));
+        $this->assertTrue($ruleD->match('delete', $this->resourceStub));
     }
 
     public function testMatchRuleWithWrongConditions()
     {
-        $subjectStub = $this->getMock('Authorizit\Subject\SubjectInterface');
+        $resourceStub = $this->getMock('Authorizit\Resource\ResourceInterface');
 
-        $subjectStub
+        $resourceStub
              ->expects($this->any())
              ->method('getClass')
-             ->will($this->returnValue('SubjectStub'));
+             ->will($this->returnValue('ResourceStub'));
 
-        $ruleA = new Rule('create', 'SubjectStub', array('userId' => 1, 'foo' => 1));
-        $ruleB = new Rule('read', 'SubjectStub', array('userId' => 1, 'foo' => 1));
-        $ruleC = new Rule('update', 'SubjectStub', array('userId' => 1, 'foo' => 1));
-        $ruleD = new Rule('delete', 'SubjectStub', array('userId' => 1, 'foo' => 1));
+        $ruleA = new Rule('create', 'ResourceStub', array('userId' => 1, 'foo' => 1));
+        $ruleB = new Rule('read', 'ResourceStub', array('userId' => 1, 'foo' => 1));
+        $ruleC = new Rule('update', 'ResourceStub', array('userId' => 1, 'foo' => 1));
+        $ruleD = new Rule('delete', 'ResourceStub', array('userId' => 1, 'foo' => 1));
 
-        $this->assertFalse($ruleA->match('create', $subjectStub));
-        $this->assertFalse($ruleB->match('read', $subjectStub));
-        $this->assertFalse($ruleC->match('update', $subjectStub));
-        $this->assertFalse($ruleD->match('delete', $subjectStub));
+        $this->assertFalse($ruleA->match('create', $resourceStub));
+        $this->assertFalse($ruleB->match('read', $resourceStub));
+        $this->assertFalse($ruleC->match('update', $resourceStub));
+        $this->assertFalse($ruleD->match('delete', $resourceStub));
     }
 
     /**

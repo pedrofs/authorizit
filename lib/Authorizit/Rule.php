@@ -4,9 +4,9 @@ namespace Authorizit;
 class Rule
 {
     const MANAGE_ACTION = 'manage';
-    const ALL_SUBJECTS  = 'all';
+    const ALL_RESOURCES  = 'all';
 
-    private $subject;
+    private $resource;
     private $action;
     private $conditions;
     private $availableActions = array(
@@ -17,7 +17,7 @@ class Rule
         'manage',
     );
 
-    public function __construct($action, $subject, $conditions = array())
+    public function __construct($action, $resource, $conditions = array())
     {
         if (!in_array($action, $this->availableActions)) {
             throw new \InvalidArgumentException(
@@ -26,52 +26,82 @@ class Rule
             );
         }
 
-        $this->subject    = $subject;
+        $this->resource   = $resource;
         $this->action     = $action;
         $this->conditions = $conditions;
     }
 
-    public function match($action, $subject)
+    /**
+     * Validate rule against a given $action and $resource also using conditions.
+     * 
+     * @param string $action
+     * @param ResourceInterface $resource
+     * @return bool
+     */
+    public function match($action, $resource)
     {
-        return $this->matchAction($action) &&
-            $this->matchSubject($subject);
+        return $this->softMatch($action, $resource) &&
+                $this->matchResourceConditions($resource);
     }
 
-    public function matchAction($action)
+    /**
+     * Validate rule using just $action and $resource. Ignoring conditions.
+     *
+     * @param string $action
+     * @param string $resource
+     * @return bool
+     */
+    public function softMatch($action, $resource)
+    {
+        return $this->matchAction($action) &&
+            $this->matchResourceClass($resource);
+    }
+
+    /**
+     * Match the rule action against a given one.
+     *
+     * @param string $action
+     * @return bool
+     */
+    private function matchAction($action)
     {
         return $this->action == self::MANAGE_ACTION ||
             $this->action == $action;
     }
 
-    public function matchSubject($subject)
+    /**
+     * Match the rule resource class against a given one.
+     *
+     * @param ResourceInterface $resource
+     * @return bool
+     */
+    private function matchResourceClass($resource)
     {
-        return $this->matchSubjectClass($subject) &&
-            $this->matchSubjectConditions($subject);
+        $resourceClass = $this->getResourceClass($resource);
+
+        return $this->resource == self::ALL_RESOURCES ||
+            $this->resource == $resourceClass;
     }
 
-    private function matchSubjectClass($subject)
+    /**
+     * Match the rule resource conditions against a given resource.
+     *
+     * @param ResourceInterface $resource
+     * @return bool
+     */
+    private function matchResourceConditions($resource)
     {
-        $subjectClass = $this->getSubjectClass($subject);
-
-        return $this->subject == self::ALL_SUBJECTS ||
-            $this->subject == $subjectClass;
+        return $resource->checkProperties($this->conditions);
     }
 
-    private function matchSubjectConditions($subject)
+    /**
+     * Get the resource class from Resource.
+     *
+     * @param ResourceInterface $resource
+     * @return string
+     */
+    private function getResourceClass($resource)
     {
-        if (is_string($subject)) {
-            return true;
-        }
-
-        return $subject->checkProperties($this->conditions);
-    }
-
-    private function getSubjectClass($subject)
-    {
-        if (is_string($subject)) {
-            return $subject;
-        }
-
-        return $subject->getClass();
+        return $resource->getClass();
     }
 }
