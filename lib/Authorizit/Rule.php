@@ -26,13 +26,13 @@ class Rule
             );
         }
 
-        $this->resource    = $resource;
+        $this->resource   = $resource;
         $this->action     = $action;
         $this->conditions = $conditions;
     }
 
     /**
-     * Validate that rules against a given action and resource.
+     * Validate rule against a given $action and $resource also using conditions.
      * 
      * @param string $action
      * @param ResourceInterface $resource
@@ -40,9 +40,21 @@ class Rule
      */
     public function match($action, $resource)
     {
-        return $this->matchAction($action) &&
-                $this->matchResourceClass($resource) &&
+        return $this->softMatch($action, $resource) &&
                 $this->matchResourceConditions($resource);
+    }
+
+    /**
+     * Validate rule using just $action and $resource. Ignoring conditions.
+     *
+     * @param string $action
+     * @param string $resource
+     * @return bool
+     */
+    public function softMatch($action, $resource)
+    {
+        return $this->matchAction($action) &&
+            $this->matchResourceClass($resource);
     }
 
     /**
@@ -51,7 +63,7 @@ class Rule
      * @param string $action
      * @return bool
      */
-    public function matchAction($action)
+    private function matchAction($action)
     {
         return $this->action == self::MANAGE_ACTION ||
             $this->action == $action;

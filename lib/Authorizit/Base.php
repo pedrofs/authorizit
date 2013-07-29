@@ -37,16 +37,62 @@ abstract class Base
     }
 
     /**
+     * Get the resource factory.
+     *
+     * @return ObjectResourceFactory
+     */
+    public function getResourceFactory()
+    {
+        return $this->resourceFactory;
+    }
+
+    /**
+     * Set the resource factory.
+     *
+     * @param ResourceFactoryInterface $resourceFactory
+     * @return $this
+     */
+    public function setResourceFactory(ResourceFactoryInterface $resourceFactory)
+    {
+        $this->resourceFactory = $resourceFactory;
+
+        return $this;
+    }
+
+    /**
+     * Get the modelAdapter class.
+     *
+     * @return ModelAdapterInterface
+     */
+    public function getModelAdapter()
+    {
+        return $this->modelAdapter;
+    }
+
+    /**
+     * Set the modelAdapter class.
+     *
+     * @param ModelAdapterInterface $modelAdapter
+     * @return $this
+     */
+    public function setModelAdapter($modelAdapter)
+    {
+        $this->modelAdapter = $modelAdapter;
+
+        return $this;
+    }
+
+    /**
      * Add a rule to this authorizit instance.
      *
      * @param string $action
      * @param string $resource
-     * @param array $conditions
+     * @param array  $conditions
      * @return null
      */
-    public function write($action, $resource, $conditions = array())
+    public function write($action, $resourceClass, $conditions = array())
     {
-        $this->rules->add(new Rule($action, $resource, $conditions));
+        $this->rules->add(new Rule($action, $resourceClass, $conditions));
     }
 
     /**
@@ -70,48 +116,46 @@ abstract class Base
     }
 
     /**
-     * Set the resource factory.
+     * Load resources based on authorizit rules.
      *
-     * @param ResourceFactoryInterface $resourceFactory
-     * @return $this
+     * @param string $action
+     * @param string $resourceClass
+     * @return array
      */
-    public function setResourceFactory(ResourceFactoryInterface $resourceFactory)
+    public function loadResources($action, $resourceClass)
     {
-        $this->resourceFactory = $resourceFactory;
+        if (!$this->modelAdapter) {
+            throw new \BadMethodCallException(
+                "\$modelAdapter not set. " .
+                "You should set one in order to retrieve authorized resources. " .
+                "See ModelAdapterInterface."
+            );
+        }
 
-        return $this;
+        $rules = $this->getRelevantRules($action, $resourceClass);
+
+        return $this->modelAdapter->loadResources($rules);
     }
 
     /**
-     * Get the resource factory.
+     * Get rules that fit the $action and $resourceClass (do not check anything about conditions).
      *
-     * @return ObjectResourceFactory
+     * @param string $action
+     * @param string $resourceClass
+     * @return array
      */
-    public function getResourceFactory()
+    public function getRelevantRules($action, $resourceClass)
     {
-        return $this->resourceFactory;
-    }
+        $rules = [];
 
-    /**
-     * Set the modelAdapter class.
-     *
-     * @param ModelAdapterInterface $modelAdapter
-     * @return $this
-     */
-    public function setModelAdapter($modelAdapter)
-    {
-        $this->modelAdapter = $modelAdapter;
+        foreach ($this->getRules() as $rule) {
+            $resource = $this->resourceFactory->get($resourceClass);
 
-        return $this;
-    }
+            if ($rule->softMatch($action, $resource)) {
+                $rules[] = $rule;
+            }
+        }
 
-    /**
-     * Get the modelAdapter class.
-     *
-     * @return ModelAdapterInterface
-     */
-    public function getModelAdapter()
-    {
-        return $this->modelAdapter;
+        return $rules;
     }
 }

@@ -53,6 +53,10 @@ class BaseTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(
             $baseMock->check('create', 'Authorizit\Resource\ResourceInterface')
         );
+
+        $this->assertFalse(
+            $baseMock->check('update', 'Authorizit\Resource\ResourceInterface')
+        );
     }
 
     /**
@@ -69,6 +73,61 @@ class BaseTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf(
             'Authorizit\Resource\ResourceFactoryInterface',
             $baseMock->getResourceFactory()
+        );
+    }
+
+    /**
+     * @dataProvider getConcreteBaseMock
+     */
+    public function testLoadResources($baseMock)
+    {
+        $adapterModelMock = $this->getMock(
+            'Authorizit\ModelAdapter\ModelAdapterInterface'
+        );
+
+        $adapterModelMock->expects($this->any())
+            ->method('loadResources')
+            ->will($this->returnValue(array('id' => 1)));
+
+        $baseMock->setModelAdapter($adapterModelMock);
+
+        $this->assertCount(1, $baseMock->loadResources('action', 'TestResource'));
+    }
+
+    /**
+     * @dataProvider getConcreteBaseMock
+     */
+    public function testGetRelevantRules($baseMock)
+    {
+        $baseMock->write('create', 'Authorizit\Resource\ResourceInterface');
+        $baseMock->write('update', 'Authorizit\Resource\ResourceInterface');
+
+        $this->assertCount(1, $baseMock->getRelevantRules('create', 'Authorizit\Resource\ResourceInterface'));
+    }
+
+    /**
+     * @dataProvider getConcreteBaseMock
+     * @expectedException BadMethodCallException
+     */
+    public function testExceptionLoadResources($baseMock)
+    {
+        $this->assertCount(1, $baseMock->loadResources('action', 'TestResource'));
+    }
+
+    /**
+     * @dataProvider getConcreteBaseMock
+     */
+    public function testSetModelAdapter($baseMock)
+    {
+        $modelAdapterMock = $this->getMock(
+            'Authorizit\ModelAdapter\ModelAdapterInterface'
+        );
+
+        $baseMock->setModelAdapter($modelAdapterMock);
+
+        $this->assertInstanceOf(
+            'Authorizit\ModelAdapter\ModelAdapterInterface',
+            $baseMock->getModelAdapter()
         );
     }
 
