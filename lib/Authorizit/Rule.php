@@ -31,6 +31,13 @@ class Rule
         $this->conditions = $conditions;
     }
 
+    /**
+     * Validate that rules against a given action and resource.
+     * 
+     * @param string $action
+     * @param ResourceInterface $resource
+     * @return bool
+     */
     public function match($action, $resource)
     {
         return $this->matchAction($action) &&
@@ -38,12 +45,24 @@ class Rule
                 $this->matchResourceConditions($resource);
     }
 
+    /**
+     * Match the rule action against a given one.
+     *
+     * @param string $action
+     * @return bool
+     */
     public function matchAction($action)
     {
         return $this->action == self::MANAGE_ACTION ||
             $this->action == $action;
     }
 
+    /**
+     * Match the rule resource class against a given one.
+     *
+     * @param ResourceInterface $resource
+     * @return bool
+     */
     private function matchResourceClass($resource)
     {
         $resourceClass = $this->getResourceClass($resource);
@@ -52,11 +71,23 @@ class Rule
             $this->resource == $resourceClass;
     }
 
+    /**
+     * Match the rule resource conditions against a given resource.
+     *
+     * @param ResourceInterface $resource
+     * @return bool
+     */
     private function matchResourceConditions($resource)
     {
         return $resource->checkProperties($this->conditions);
     }
 
+    /**
+     * Get the resource class from Resource.
+     *
+     * @param ResourceInterface $resource
+     * @return string
+     */
     private function getResourceClass($resource)
     {
         return $resource->getClass();
