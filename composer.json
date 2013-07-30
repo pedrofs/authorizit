@@ -3,7 +3,7 @@
     "type": "library",
     "keywords": ["auth", "authorization", "authorize"],
     "description": "Ease to authorizing you system.",
-    "license": "whataver",
+    "license": "UNLICENSE",
     "authors": [
         {
             "name": "Pedro Fernandes Steimbruch",
