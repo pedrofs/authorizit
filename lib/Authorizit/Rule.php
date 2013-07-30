@@ -58,6 +58,16 @@ class Rule
     }
 
     /**
+     * Returns rule conditions
+     *
+     * @return array
+     */
+    public function getConditions()
+    {
+        return $this->conditions;
+    }
+
+    /**
      * Match the rule action against a given one.
      *
      * @param string $action

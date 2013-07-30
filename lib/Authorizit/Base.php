@@ -122,7 +122,7 @@ abstract class Base
      * @param string $resourceClass
      * @return array
      */
-    public function loadResources($action, $resourceClass)
+    public function loadResources($resourceClass)
     {
         if (!$this->modelAdapter) {
             throw new \BadMethodCallException(
@@ -132,7 +132,7 @@ abstract class Base
             );
         }
 
-        $rules = $this->getRelevantRules($action, $resourceClass);
+        $rules = $this->getRelevantRules('read', $resourceClass);
 
         return $this->modelAdapter->loadResources($rules);
     }

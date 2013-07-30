@@ -3,5 +3,5 @@ namespace Authorizit\ModelAdapter;
 
 interface ModelAdapterInterface
 {
-	public function loadResources();
+	public function loadResources($rules);
 }
