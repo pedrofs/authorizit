@@ -146,7 +146,7 @@ abstract class Base
      */
     public function getRelevantRules($action, $resourceClass)
     {
-        $rules = [];
+        $rules = array();
 
         foreach ($this->getRules() as $rule) {
             $resource = $this->resourceFactory->get($resourceClass);
