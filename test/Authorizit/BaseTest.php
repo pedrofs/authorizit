@@ -101,8 +101,9 @@ class BaseTest extends \PHPUnit_Framework_TestCase
     {
         $baseMock->write('create', 'Authorizit\Resource\ResourceInterface');
         $baseMock->write('update', 'Authorizit\Resource\ResourceInterface');
+        $baseMock->write('create', 'Authorizit\Resource\ResourceInterface', function () {});
 
-        $this->assertCount(1, $baseMock->getRelevantRules('create', 'Authorizit\Resource\ResourceInterface'));
+        $this->assertCount(2, $baseMock->getRelevantRules('create', 'Authorizit\Resource\ResourceInterface'));
     }
 
     /**

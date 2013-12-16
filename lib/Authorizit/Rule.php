@@ -57,6 +57,11 @@ class Rule
             $this->matchResourceClass($resource);
     }
 
+    public function hasConditions()
+    {
+        return is_array($this->conditions) && !empty($this->conditions);
+    }
+
     /**
      * Returns rule conditions
      *
@@ -101,7 +106,10 @@ class Rule
      */
     private function matchResourceConditions($resource)
     {
-        return $resource->checkProperties($this->conditions);
+        $conditions = $this->conditions;
+
+        return is_callable($conditions) ? $conditions($resource)
+            : $resource->checkProperties($conditions);
     }
 
     /**

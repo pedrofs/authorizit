@@ -27,8 +27,6 @@ abstract class Base
     abstract public function init();
 
     /**
-     * Just rules getter
-     *
      * @return array
      */
     public function getRules()
@@ -37,8 +35,6 @@ abstract class Base
     }
 
     /**
-     * Get the resource factory.
-     *
      * @return ObjectResourceFactory
      */
     public function getResourceFactory()
@@ -47,8 +43,6 @@ abstract class Base
     }
 
     /**
-     * Set the resource factory.
-     *
      * @param ResourceFactoryInterface $resourceFactory
      * @return $this
      */
@@ -60,8 +54,6 @@ abstract class Base
     }
 
     /**
-     * Get the modelAdapter class.
-     *
      * @return ModelAdapterInterface
      */
     public function getModelAdapter()
@@ -70,8 +62,6 @@ abstract class Base
     }
 
     /**
-     * Set the modelAdapter class.
-     *
      * @param ModelAdapterInterface $modelAdapter
      * @return $this
      */
@@ -138,7 +128,8 @@ abstract class Base
     }
 
     /**
-     * Get rules that fit the $action and $resourceClass (do not check anything about conditions).
+     * Get rules that are relevant to be used in the loadResources. That means that the rule
+     * should have conditions in order to be used in the query.
      *
      * @param string $action
      * @param string $resourceClass
