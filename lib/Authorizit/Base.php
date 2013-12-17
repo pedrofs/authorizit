@@ -122,7 +122,9 @@ abstract class Base
             );
         }
 
-        $rules = $this->getRelevantRules('read', $resourceClass);
+        $relevantRules = $this->getRelevantRules('read', $resourceClass);
+
+        $rules = $this->selectRuleWithConditions($relevantRules);
 
         return $this->modelAdapter->loadResources($rules);
     }
@@ -148,5 +150,17 @@ abstract class Base
         }
 
         return $rules;
+    }
+
+    private function selectRuleWithConditions($rules)
+    {
+        $rulesWithConditions = array();
+        foreach ($rules as $rule) {
+            if ($rule->hasConditions()) {
+                $rulesWithConditions[] = $rule;
+            }
+        }
+
+        return $rulesWithConditions;
     }
 }
