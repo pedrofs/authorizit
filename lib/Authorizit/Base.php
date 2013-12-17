@@ -2,7 +2,7 @@
 
 namespace Authorizit;
 
-use Authorizit\Resource\ResourceFactoryInterface;
+use Authorizit\Resource\AbstractResourceFactory;
 use Authorizit\Collection\RuleCollection;
 
 abstract class Base
@@ -46,7 +46,7 @@ abstract class Base
      * @param ResourceFactoryInterface $resourceFactory
      * @return $this
      */
-    public function setResourceFactory(ResourceFactoryInterface $resourceFactory)
+    public function setResourceFactory(AbstractResourceFactory $resourceFactory)
     {
         $this->resourceFactory = $resourceFactory;
 
