@@ -1,11 +1,22 @@
 <?php
+/**
+ * Authorizit - resource focused authorization library
+ * https://github.com/pedrofs/authorizit
+ *
+ * Licensed under UNLICENSE
+ * For full copyright and license information, please see the UNLICENSE.txt
+ * Check http://unlicense.org/
+ *
+ * @link          https://github.com/pedrofs/authorizit
+ * @license       http://unlicense.org/ Unlicense Yourself: Set Your Code Free
+ */
 
 namespace Authorizit\Collection;
 
 use Authorizit\Rule;
 
 /**
- * An RuleCollection is a Collection implementation that wraps a regular PHP array.
+ * A RuleCollection is a Collection implementation that wraps a regular PHP array.
  *
  * @author  Ricardo Heck <ricardoh3ck@gmail.com>
  */

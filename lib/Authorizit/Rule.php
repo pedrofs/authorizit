@@ -1,6 +1,24 @@
 <?php
+/**
+ * Authorizit - resource focused authorization library
+ * https://github.com/pedrofs/authorizit
+ *
+ * Licensed under UNLICENSE
+ * For full copyright and license information, please see the UNLICENSE.txt
+ * Check http://unlicense.org/
+ *
+ * @link          https://github.com/pedrofs/authorizit
+ * @license       http://unlicense.org/ Unlicense Yourself: Set Your Code Free
+ */
+
 namespace Authorizit;
 
+/**
+ * The Rule class is responsible for wrapping one rule and its conditions.
+ * It also knows how to match and $action and $resource against itself. See Rule#match.
+ *
+ * @author Pedro Fernandes Steimbruch <pedrofsteimbruch@gmail.com>
+ */
 class Rule
 {
     const MANAGE_ACTION = 'manage';
@@ -57,6 +75,9 @@ class Rule
             $this->matchResourceClass($resource);
     }
 
+    /**
+     * @return boolean
+     */
     public function hasConditions()
     {
         return is_array($this->conditions) && !empty($this->conditions);

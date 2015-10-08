@@ -1,18 +1,69 @@
 <?php
+/**
+ * Authorizit - resource focused authorization library
+ * https://github.com/pedrofs/authorizit
+ *
+ * Licensed under UNLICENSE
+ * For full copyright and license information, please see the UNLICENSE.txt
+ * Check http://unlicense.org/
+ *
+ * @link          https://github.com/pedrofs/authorizit
+ * @license       http://unlicense.org/ Unlicense Yourself: Set Your Code Free
+ */
 
 namespace Authorizit;
 
 use Authorizit\Resource\AbstractResourceFactory;
 use Authorizit\Collection\RuleCollection;
+use Authorizit\ModelAdapter\ModelAdapterInterface;
 
+/**
+ * This is the abstract Base class that you will use to inherit your Authorizit class and
+ * define your rules using Base#write, check
+ *
+ * @author Pedro Fernandes Steimbruch <pedrofsteimbruch@gmail.com>
+ */
 abstract class Base
 {
+    /**
+     * User object of your domain
+     *
+     * @var mixed
+     */
     protected $user;
+
+    /**
+     * RuleCollection object
+     *
+     * @var RuleCollection
+     */
     protected $rules;
+
+    /**
+     * ResourceFactory object
+     *
+     * @var AbstractResourceFactory
+     */
     protected $resourceFactory;
+
+    /**
+     * ModelAdapter object
+     *
+     * @var ModelAdapterInterface
+     */
     protected $modelAdapter;
 
-    public function __construct($user, $resourceFactory, $modelAdapter = null)
+
+    /**
+     * Constructor
+     *
+     * @param mixed $user Your user domain object
+     * @param AbstractResourceFactory $resourceFactory The factory for your resource domain object
+     * @param ModelAdapterInterface $modelAdapter The model adapter of your domain for retrieving the resources
+     */
+    public function __construct($user,
+        AbstractResourceFactory $resourceFactory,
+        ModelAdapterInterface $modelAdapter = null)
     {
         $this->user            = $user;
         $this->rules           = new RuleCollection();
@@ -27,7 +78,7 @@ abstract class Base
     abstract public function init();
 
     /**
-     * @return array
+     * @return RuleCollection
      */
     public function getRules()
     {
