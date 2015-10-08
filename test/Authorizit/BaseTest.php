@@ -8,8 +8,8 @@ class BaseTest extends \PHPUnit_Framework_TestCase
 {
     public function testConstructor()
     {
-        $resourceFactoryMock = $this->getMock(
-            'Authorizit\Resource\AbstractResourceFactory'
+        $resourceFactoryMock = $this->getMockForAbstractClass(
+            'Authorizit\Resource\Factory\AbstractResourceFactory'
         );
 
         $baseMock = $this->getMockForAbstractClass(
@@ -64,14 +64,14 @@ class BaseTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetResourceFactory($baseMock)
     {
-        $resourceFactoryMock = $this->getMock(
-            'Authorizit\Resource\AbstractResourceFactory'
+        $resourceFactoryMock = $this->getMockForAbstractClass(
+            'Authorizit\Resource\Factory\AbstractResourceFactory'
         );
 
         $baseMock->setResourceFactory($resourceFactoryMock);
 
         $this->assertInstanceOf(
-            'Authorizit\Resource\AbstractResourceFactory',
+            'Authorizit\Resource\Factory\AbstractResourceFactory',
             $baseMock->getResourceFactory()
         );
     }
@@ -136,7 +136,7 @@ class BaseTest extends \PHPUnit_Framework_TestCase
     {
         $resourceMock = $this->getResourceMock();
 
-        $resourceFactoryMock = $this->getMock(
+        $resourceFactoryMock = $this->getMockForAbstractClass(
             'Authorizit\Resource\Factory\AbstractResourceFactory'
         );
 

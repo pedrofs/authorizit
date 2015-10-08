@@ -61,9 +61,7 @@ abstract class Base
      * @param AbstractResourceFactory $resourceFactory The factory for your resource domain object
      * @param ModelAdapterInterface $modelAdapter The model adapter of your domain for retrieving the resources
      */
-    public function __construct($user,
-        AbstractResourceFactory $resourceFactory,
-        ModelAdapterInterface $modelAdapter = null)
+    public function __construct($user, $resourceFactory, ModelAdapterInterface $modelAdapter = null)
     {
         $this->user            = $user;
         $this->rules           = new RuleCollection();
@@ -97,7 +95,7 @@ abstract class Base
      * @param ResourceFactoryInterface $resourceFactory
      * @return $this
      */
-    public function setResourceFactory(AbstractResourceFactory $resourceFactory)
+    public function setResourceFactory($resourceFactory)
     {
         $this->resourceFactory = $resourceFactory;
 
